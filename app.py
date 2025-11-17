@@ -147,14 +147,35 @@ le = joblib.load("label_encoder.pkl")
 if selected_page == "About":
     st.subheader("📘 About The Project")
     st.write("""
-    This ML system predicts the best crop using:
-    - Nitrogen  
-    - Phosphorus  
-    - Potassium  
-    - Temperature  
-    - Humidity  
-    - pH  
-    - Rainfall  
+    This Crop Recommendation System is an intelligent machine learning-based
+application designed to assist farmers and agriculture professionals in selecting
+the most suitable crop for cultivation based on environmental and soil conditions.
+
+The system uses seven key input parameters:
+- Nitrogen (N)
+- Phosphorus (P)
+- Potassium (K)
+- Temperature
+- Humidity
+- Soil pH
+- Rainfall
+
+These parameters are processed using a trained Machine Learning model that learns
+from historical agricultural data. The model identifies patterns and relationships
+between soil nutrients, climate conditions, and crop types. Based on these
+learned patterns, the system predicts the best crop that can grow efficiently
+under the given conditions.
+
+This system helps in:
+- Improving productivity
+- Reducing crop selection errors
+- Supporting precision agriculture
+- Making data-driven farming decisions
+- Increasing overall crop yield
+
+The project integrates Machine Learning, Python, and Streamlit to provide an
+easy-to-use, clean, web-based interface accessible to everyone.
+
     """)
     st.stop()
 
@@ -162,9 +183,32 @@ if selected_page == "About":
 if selected_page == "Dataset":
     st.subheader("📊 Dataset Information")
     st.write("""
-    - 22 crops  
-    - 7 numerical features  
-    - Clean and balanced dataset  
+   ### 📊 Dataset Information
+
+The dataset used in this project is an agricultural crop recommendation dataset
+that contains real-world soil and climate measurements along with the
+corresponding suitable crop. It includes **22 different crop types** and **2,200+
+records** of soil profiles collected from agricultural research sources.
+
+Each row contains the following features:
+
+- **Nitrogen (N)** – Essential nutrient for leaf growth  
+- **Phosphorus (P)** – Supports root development  
+- **Potassium (K)** – Improves crop immunity  
+- **Temperature (°C)** – Surrounding climatic temperature  
+- **Humidity (%)** – Moisture content in the air  
+- **Soil pH** – Acidity/alkalinity of the soil  
+- **Rainfall (mm)** – Annual rainfall
+
+The dataset represents diverse Indian agricultural conditions and reflects
+various crop-growing environments.  
+It is structured, clean, and ideal for building classification models.
+
+This dataset is widely used in crop prediction research due to:
+- High accuracy potential  
+- Good feature–crop correlation  
+- Realistic environmental parameters  
+  
     """)
     st.stop()
 
@@ -172,9 +216,31 @@ if selected_page == "Dataset":
 if selected_page == "Model":
     st.subheader("🤖 Machine Learning Model")
     st.write("""
-    - Multiple ML models tested  
-    - Best performing one selected  
-    - Pipeline with StandardScaler  
+   ### 🤖 Machine Learning Model Used
+
+Multiple machine learning models were evaluated to determine the best-performing
+model for crop prediction.  
+The following models were tested:
+
+- Decision Tree Classifier  
+- Random Forest Classifier  
+- Support Vector Machine (SVM)  
+- K-Nearest Neighbors (KNN)  
+- Logistic Regression  
+- XGBoost Classifier  
+
+Each model was trained using standardized feature values.  
+Performance was measured based on **accuracy**, **precision**, **recall**, and
+**confusion matrix**.
+
+### 🏆 Best Model Selected
+Among all models, **XGBoost Classifier** delivered the highest accuracy and
+best generalization on unseen data.
+
+### 📦 Final Pipeline
+To improve stability and prediction consistency, the final deployed pipeline is:
+
+  
     """)
     st.stop()
 
@@ -212,3 +278,4 @@ if predict_btn:
     })
 
     st.bar_chart(df_compare.set_index("Parameter"))
+
