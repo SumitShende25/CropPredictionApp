@@ -2,7 +2,6 @@ import streamlit as st
 import joblib
 import numpy as np
 import pandas as pd
-import base64
 
 # PAGE SETTINGS
 st.set_page_config(
@@ -11,101 +10,79 @@ st.set_page_config(
     layout="wide"
 )
 
-# BACKGROUND IMAGE
-def add_bg(image_file):
-    with open(image_file, "rb") as f:
-        data = f.read()
-    encoded = base64.b64encode(data).decode()
-    st.markdown(
-        f"""
-        <style>
-        .stApp {{
-            background-image: url("data:image/png;base64,{encoded}");
-            background-size: cover;
-            background-attachment: fixed;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
-add_bg("background.jpg")
-
-
-# ---------------------- PREMIUM CSS ----------------------
-css = """
+# ---------------------- CLEAN WHITE-BLUE UI ----------------------
+clean_css = """
 <style>
 
-/* White Text Everywhere */
 html, body, [class*="css"] {
-    color: white !important;
+    color: #000000 !important;
+    font-family: 'Segoe UI', sans-serif;
 }
 
-/* TOP NAVIGATION BAR */
-.navbar {
+/* Top Navigation Bar */
+.nav-bar {
     width: 100%;
-    background: rgba(0,0,0,0.55);
+    background: #ffffff;
+    border-bottom: 2px solid #e6e6e6;
     padding: 15px;
     display: flex;
     justify-content: center;
-    gap: 50px;
-    border-radius: 0 0 12px 12px;
-    backdrop-filter: blur(8px);
+    gap: 40px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .nav-item {
-    color: white;
+    color: #0057ff;
     font-size: 20px;
     font-weight: 700;
     cursor: pointer;
-    padding: 8px 15px;
+    padding: 6px 15px;
     border-radius: 6px;
     transition: 0.3s;
 }
 
 .nav-item:hover {
-    background: rgba(255,255,255,0.22);
+    background: #e8f0ff;
 }
 
-/* Active Page */
 .active {
-    background: rgba(0,166,255,0.35);
-    border-bottom: 3px solid #00c6ff;
+    background: #d9e7ff;
+    border-bottom: 3px solid #0057ff;
 }
 
-/* Title Section */
+/* Page Title */
 .title-box {
     width: 100%;
-    background: rgba(0,0,0,0.50);
+    background: #f1f6ff;
     padding: 25px;
-    margin-top: 10px;
     text-align: center;
     border-radius: 12px;
-    backdrop-filter: blur(5px);
+    margin-top: 12px;
 }
 
 .title-text {
-    font-size: 50px;
+    font-size: 45px;
     font-weight: 900;
-    color: white;
-    text-shadow: 3px 3px 12px black;
+    color: #003a96;
 }
 
 /* Input Card */
 .input-card {
-    background: rgba(0,0,0,0.55);
+    background: white;
     padding: 25px;
     border-radius: 15px;
-    backdrop-filter: blur(12px);
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.7);
+    border: 1px solid #e6e6e6;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.06);
     margin-top: 20px;
 }
 
 /* Predict Button */
 .stButton > button {
     width: 100%;
-    background: #00c6ff;
-    color: black;
+    background: #0057ff;
+    color: white;
     font-weight: 700;
     padding: 12px;
     border-radius: 8px;
@@ -113,43 +90,45 @@ html, body, [class*="css"] {
     font-size: 18px;
 }
 .stButton > button:hover {
-    background: #0099cc;
+    background: #003bb5;
 }
 
 /* Result Box */
 .result-box {
-    background: rgba(0,0,0,0.6);
+    background: #e8f0ff;
     padding: 18px;
-    border-left: 6px solid #00c6ff;
+    border-left: 6px solid #0057ff;
     border-radius: 10px;
     margin-top: 15px;
 }
 
 </style>
 """
-st.markdown(css, unsafe_allow_html=True)
+st.markdown(clean_css, unsafe_allow_html=True)
 
 
-# TOP NAVIGATION BAR (CUSTOM)
+# ---------------------- TOP NAVIGATION ----------------------
 selected_page = st.session_state.get("selected_page", "Home")
 
-cols = st.columns([1,1,1,1,1])
-with cols[0]:
-    if st.button("🏠 Home", key="home_btn"):
+# Build nav bar
+nav_cols = st.columns([1,1,1,1,1])
+with nav_cols[0]:
+    if st.button("🏠 Home"):
         selected_page = "Home"
-with cols[1]:
-    if st.button("📘 About Project", key="about_btn"):
+with nav_cols[1]:
+    if st.button("📘 About Project"):
         selected_page = "About"
-with cols[2]:
-    if st.button("📊 Dataset Info", key="data_btn"):
+with nav_cols[2]:
+    if st.button("📊 Dataset Info"):
         selected_page = "Dataset"
-with cols[3]:
-    if st.button("🤖 Model Used", key="model_btn"):
+with nav_cols[3]:
+    if st.button("🤖 Model Used"):
         selected_page = "Model"
 
 st.session_state["selected_page"] = selected_page
 
-# TITLE
+
+# ---------------------- TITLE ----------------------
 st.markdown("""
     <div class="title-box">
         <h1 class="title-text">🌾 Crop Recommendation System</h1>
@@ -157,7 +136,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# LOAD MODEL
+# ---------------------- LOAD ML MODEL ----------------------
 pipeline = joblib.load("crop_pipeline.pkl")
 le = joblib.load("label_encoder.pkl")
 
@@ -168,33 +147,39 @@ le = joblib.load("label_encoder.pkl")
 if selected_page == "About":
     st.subheader("📘 About The Project")
     st.write("""
-    This system predicts the best crop using environmental parameters.
-    It uses ML algorithms to generate crop recommendation.
+    This ML system predicts the best crop using:
+    - Nitrogen  
+    - Phosphorus  
+    - Potassium  
+    - Temperature  
+    - Humidity  
+    - pH  
+    - Rainfall  
     """)
     st.stop()
 
-# DATASET
+# DATASET PAGE
 if selected_page == "Dataset":
     st.subheader("📊 Dataset Information")
     st.write("""
     - 22 crops  
-    - 7 environmental features  
+    - 7 numerical features  
     - Clean and balanced dataset  
     """)
     st.stop()
 
-# MODEL USED
+# MODEL PAGE
 if selected_page == "Model":
     st.subheader("🤖 Machine Learning Model")
     st.write("""
     - Multiple ML models tested  
-    - Best-performing one selected  
-    - Pipeline includes StandardScaler  
+    - Best performing one selected  
+    - Pipeline with StandardScaler  
     """)
     st.stop()
 
 
-# HOME PAGE (MAIN)
+# ---------------------- HOME PAGE ----------------------
 st.markdown("<div class='input-card'>", unsafe_allow_html=True)
 
 N = st.number_input("Nitrogen (N)", 0, 200, 50)
@@ -209,7 +194,8 @@ predict_btn = st.button("Predict Crop 🌱")
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# PREDICTION
+
+# ---------------------- PREDICTION OUTPUT ----------------------
 if predict_btn:
     sample = np.array([[N, P, K, temperature, humidity, ph, rainfall]])
     pred = pipeline.predict(sample)
