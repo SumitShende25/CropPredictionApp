@@ -4,18 +4,14 @@ import numpy as np
 import pandas as pd
 import base64
 
-# ---------------------------
 # PAGE SETTINGS
-# ---------------------------
 st.set_page_config(
     page_title="Crop Recommendation System",
     page_icon="🌾",
-    layout="centered"
+    layout="wide"
 )
 
-# ---------------------------
 # BACKGROUND IMAGE
-# ---------------------------
 def add_bg(image_file):
     with open(image_file, "rb") as f:
         data = f.read()
@@ -33,114 +29,143 @@ def add_bg(image_file):
         unsafe_allow_html=True
     )
 
-# Use your own background image (upload file to GitHub)
-add_bg("background.jpg")   # <-- add your image here
+add_bg("background.jpg")
 
 
-# ---------------------------
-# LOAD MODEL & ENCODER
-# ---------------------------
-pipeline = joblib.load("crop_pipeline.pkl")
-le = joblib.load("label_encoder.pkl")
-
-# ---------------------------
-# CROP IMAGES (ADD YOUR OWN IMAGES)
-# ---------------------------
-crop_images = {
-    "rice": "images/rice.jpg",
-    "maize": "images/maize.jpg",
-    "mango": "images/mango.jpg",
-    "banana": "images/banana.jpg",
-    "coconut": "images/coconut.jpg",
-    "apple": "images/apple.jpg"
-}
-
-# ---------------------------
-# CROP INFORMATION
-# ---------------------------
-crop_info = {
-    "rice": "Ideal Temperature: 20–35°C\nRainfall: 150–300mm\nSoil: Clay Loam\nNeeds standing water.",
-    "maize": "Ideal Temperature: 18–27°C\nRainfall: 50–100mm\nSoil: Loamy Soil\nHighly adaptable crop.",
-    "apple": "Temperature: 8–15°C\nRainfall: 100–200mm\nSoil: Well-Drained Loam\nNeeds cool climate.",
-    "mango": "Temperature: 24–30°C\nRainfall: 80–120mm\nSoil: Red/Loamy Soil\nRequires warm climate.",
-    "banana": "Temperature: 20–30°C\nRainfall: 100–200mm\nSoil: Rich Loam\nNeeds high humidity.",
-    "coconut": "Temperature: 22–30°C\nRainfall: 100–300mm\nSoil: Sandy/Loam\nBest near coastal regions."
-}
-
-# ---------------------------
-# CUSTOM CSS
-# ---------------------------
-clean_css = """
+# ---------------------- ADVANCED CSS UI ----------------------
+css = """
 <style>
-h1 {
-    text-align: center;
-    color: #0057ff;
-    font-weight: 900;
-    margin-bottom: -10px;
+
+/* White Text Everywhere */
+html, body, [class*="css"]  {
+    color: white !important;
 }
+
+/* Glass Sidebar */
+.sidebar .sidebar-content {
+    background: rgba(255, 255, 255, 0.10) !important;
+    backdrop-filter: blur(10px) !important;
+    border-right: 2px solid rgba(255,255,255,0.3);
+    height: 100%;
+}
+
+.sidebar .sidebar-content h1, h2, h3, p, label {
+    color: white !important;
+}
+
+/* Sidebar Navigation Buttons */
+.stRadio > div {
+    background: rgba(255,255,255,0.07);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.stRadio label {
+    font-size: 18px;
+    font-weight: 600;
+    color: white !important;
+}
+
+/* Hover Effect */
+.stRadio div:hover {
+    background: rgba(255,255,255,0.18);
+    transition: 0.3s;
+}
+
+/* Title */
+.main-title {
+    font-size: 42px;
+    font-weight: 900;
+    text-align: center;
+    color: white;
+    margin-top: 0px;
+    text-shadow: 2px 2px 8px black;
+}
+
+/* Input Card */
 .input-card {
-    background: rgba(255,255,255,0.80);
+    background: rgba(0, 0, 0, 0.45);
     padding: 25px;
     border-radius: 15px;
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.25);
-    margin-bottom: 20px;
-    backdrop-filter: blur(5px);
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.6);
+    backdrop-filter: blur(15px);
 }
+
+/* Predict Button */
+.stButton > button {
+    width: 100%;
+    background: #00c6ff;
+    color: black;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 18px;
+    border: none;
+    transition: 0.3s ease;
+}
+.stButton > button:hover {
+    background: #00a3d5;
+}
+
+/* Result Box */
 .result-box {
-    background: rgba(0, 175, 255, 0.2);
-    padding: 15px;
-    border-left: 6px solid #0057ff;
-    border-radius: 10px;
-    animation: glow 1.5s infinite alternate;
-}
-@keyframes glow {
-    0% { box-shadow: 0 0 10px #80d4ff; }
-    100% { box-shadow: 0 0 25px #1aa3ff; }
+    background: rgba(0, 0, 0, 0.5);
+    padding: 18px;
+    border-radius: 12px;
+    border-left: 5px solid #00c6ff;
+    text-shadow: 1px 1px 6px black;
 }
 </style>
 """
-st.markdown(clean_css, unsafe_allow_html=True)
+st.markdown(css, unsafe_allow_html=True)
 
-# ---------------------------
-# SIDEBAR MENU
-# ---------------------------
-st.sidebar.title("📌 Navigation Menu")
-menu = st.sidebar.radio("Select Page", ["Home", "About Project", "Dataset Info", "Model Used"])
 
-if menu == "About Project":
-    st.title("📘 About Project")
+# LOAD MODEL + ENCODER
+pipeline = joblib.load("crop_pipeline.pkl")
+le = joblib.load("label_encoder.pkl")
+
+# SIDEBAR
+st.sidebar.title("📌  Navigation Menu")
+page = st.sidebar.radio("Select Page", ["Home", "About Project", "Dataset Info", "Model Used"])
+
+# ABOUT PAGES
+if page == "About Project":
+    st.markdown("<h1 class='main-title'>📘 About The Project</h1>", unsafe_allow_html=True)
     st.write("""
-    This ML-based Crop Recommendation System uses soil and environmental input data 
-    to determine the best crop to cultivate.
+    This ML system predicts the best crop using environmental conditions:
+    - Nitrogen  
+    - Phosphorus  
+    - Potassium  
+    - Temperature  
+    - Humidity  
+    - pH Value  
+    - Rainfall  
     """)
     st.stop()
 
-if menu == "Dataset Info":
-    st.title("📊 Dataset Information")
+if page == "Dataset Info":
+    st.markdown("<h1 class='main-title'>📊 Dataset Information</h1>", unsafe_allow_html=True)
     st.write("""
-    - 22 crops
-    - 7 environmental parameters
-    - Cleaned and processed dataset
+    - 22 crop classes  
+    - 7 numerical features  
+    - Clean and balanced  
+    - Used for ML training  
     """)
     st.stop()
 
-if menu == "Model Used":
-    st.title("🤖 Machine Learning Model")
+if page == "Model Used":
+    st.markdown("<h1 class='main-title'>🤖 Machine Learning Model</h1>", unsafe_allow_html=True)
     st.write("""
-    - 16+ ML models tested  
-    - Best performing model selected  
-    - Pipeline with StandardScaler + Best Model  
+    - Multiple ML models tested  
+    - Final model selected based on best performance  
+    - Pipeline: StandardScaler + Best Model  
     """)
     st.stop()
 
-# ---------------------------
-# MAIN TITLE
-# ---------------------------
-st.markdown("<h1>🌾 Crop Recommendation System</h1>", unsafe_allow_html=True)
 
-# ---------------------------
-# INPUT CARD
-# ---------------------------
+# ---------------------- HOME PAGE ----------------------
+st.markdown("<h1 class='main-title'>🌾 Crop Recommendation System</h1>", unsafe_allow_html=True)
+
 st.markdown("<div class='input-card'>", unsafe_allow_html=True)
 
 N = st.number_input("Nitrogen (N)", 0, 200, 50)
@@ -155,33 +180,20 @@ predict_btn = st.button("Predict Crop 🌱")
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------------------------
-# PREDICTION SECTION
-# ---------------------------
+# ---------------------- PREDICTION ----------------------
 if predict_btn:
     sample = np.array([[N, P, K, temperature, humidity, ph, rainfall]])
-    pred = pipeline.predict(sample)
-    crop = le.inverse_transform(pred)[0]
+    prediction = pipeline.predict(sample)
+    crop = le.inverse_transform(prediction)[0]
 
-    # ANIMATED RESULT BOX
     st.markdown(
-        f"<div class='result-box'><h2>Recommended Crop: {crop.upper()}</h2></div>",
+        f"<div class='result-box'><h2>🌟 Recommended Crop: {crop.upper()}</h2></div>",
         unsafe_allow_html=True
     )
 
-    # SHOW CROP IMAGE (if available)
-    if crop.lower() in crop_images:
-        st.image(crop_images[crop.lower()], width=300)
-
-    # CROP INFORMATION
-    st.subheader("📘 Crop Requirements")
-    st.write(crop_info.get(crop.lower(), "Information not available."))
-
-    # COMPARISON CHART
-    st.subheader("📊 Comparison Chart")
     df_compare = pd.DataFrame({
-        "Parameter": ["N", "P", "K", "Temp", "Humid", "pH", "Rainfall"],
+        "Parameter": ["N", "P", "K", "Temperature", "Humidity", "pH", "Rainfall"],
         "Your Input": [N, P, K, temperature, humidity, ph, rainfall]
     })
-    st.bar_chart(df_compare.set_index("Parameter"))
 
+    st.bar_chart(df_compare.set_index("Parameter"))
