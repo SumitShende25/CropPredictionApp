@@ -32,63 +32,73 @@ def add_bg(image_file):
 add_bg("background.jpg")
 
 
-# ---------------------- ADVANCED CSS UI ----------------------
+# ---------------------- PREMIUM CSS ----------------------
 css = """
 <style>
 
 /* White Text Everywhere */
-html, body, [class*="css"]  {
+html, body, [class*="css"] {
     color: white !important;
 }
 
-/* Glass Sidebar */
-.sidebar .sidebar-content {
-    background: rgba(255, 255, 255, 0.10) !important;
-    backdrop-filter: blur(10px) !important;
-    border-right: 2px solid rgba(255,255,255,0.3);
-    height: 100%;
+/* TOP NAVIGATION BAR */
+.navbar {
+    width: 100%;
+    background: rgba(0,0,0,0.55);
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    border-radius: 0 0 12px 12px;
+    backdrop-filter: blur(8px);
 }
 
-.sidebar .sidebar-content h1, h2, h3, p, label {
-    color: white !important;
-}
-
-/* Sidebar Navigation Buttons */
-.stRadio > div {
-    background: rgba(255,255,255,0.07);
-    padding: 10px;
-    border-radius: 10px;
-}
-
-.stRadio label {
-    font-size: 18px;
-    font-weight: 600;
-    color: white !important;
-}
-
-/* Hover Effect */
-.stRadio div:hover {
-    background: rgba(255,255,255,0.18);
+.nav-item {
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 8px 15px;
+    border-radius: 6px;
     transition: 0.3s;
 }
 
-/* Title */
-.main-title {
-    font-size: 42px;
-    font-weight: 900;
+.nav-item:hover {
+    background: rgba(255,255,255,0.22);
+}
+
+/* Active Page */
+.active {
+    background: rgba(0,166,255,0.35);
+    border-bottom: 3px solid #00c6ff;
+}
+
+/* Title Section */
+.title-box {
+    width: 100%;
+    background: rgba(0,0,0,0.50);
+    padding: 25px;
+    margin-top: 10px;
     text-align: center;
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+}
+
+.title-text {
+    font-size: 50px;
+    font-weight: 900;
     color: white;
-    margin-top: 0px;
-    text-shadow: 2px 2px 8px black;
+    text-shadow: 3px 3px 12px black;
 }
 
 /* Input Card */
 .input-card {
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0,0,0,0.55);
     padding: 25px;
     border-radius: 15px;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.6);
-    backdrop-filter: blur(15px);
+    backdrop-filter: blur(12px);
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.7);
+    margin-top: 20px;
 }
 
 /* Predict Button */
@@ -97,75 +107,94 @@ html, body, [class*="css"]  {
     background: #00c6ff;
     color: black;
     font-weight: 700;
-    border-radius: 8px;
     padding: 12px;
-    font-size: 18px;
+    border-radius: 8px;
     border: none;
-    transition: 0.3s ease;
+    font-size: 18px;
 }
 .stButton > button:hover {
-    background: #00a3d5;
+    background: #0099cc;
 }
 
 /* Result Box */
 .result-box {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0,0,0,0.6);
     padding: 18px;
-    border-radius: 12px;
-    border-left: 5px solid #00c6ff;
-    text-shadow: 1px 1px 6px black;
+    border-left: 6px solid #00c6ff;
+    border-radius: 10px;
+    margin-top: 15px;
 }
+
 </style>
 """
 st.markdown(css, unsafe_allow_html=True)
 
 
-# LOAD MODEL + ENCODER
+# TOP NAVIGATION BAR (CUSTOM)
+selected_page = st.session_state.get("selected_page", "Home")
+
+cols = st.columns([1,1,1,1,1])
+with cols[0]:
+    if st.button("🏠 Home", key="home_btn"):
+        selected_page = "Home"
+with cols[1]:
+    if st.button("📘 About Project", key="about_btn"):
+        selected_page = "About"
+with cols[2]:
+    if st.button("📊 Dataset Info", key="data_btn"):
+        selected_page = "Dataset"
+with cols[3]:
+    if st.button("🤖 Model Used", key="model_btn"):
+        selected_page = "Model"
+
+st.session_state["selected_page"] = selected_page
+
+# TITLE
+st.markdown("""
+    <div class="title-box">
+        <h1 class="title-text">🌾 Crop Recommendation System</h1>
+    </div>
+""", unsafe_allow_html=True)
+
+
+# LOAD MODEL
 pipeline = joblib.load("crop_pipeline.pkl")
 le = joblib.load("label_encoder.pkl")
 
-# SIDEBAR
-st.sidebar.title("📌  Navigation Menu")
-page = st.sidebar.radio("Select Page", ["Home", "About Project", "Dataset Info", "Model Used"])
 
-# ABOUT PAGES
-if page == "About Project":
-    st.markdown("<h1 class='main-title'>📘 About The Project</h1>", unsafe_allow_html=True)
+# ---------------------- PAGE CONTENT ----------------------
+
+# ABOUT PROJECT
+if selected_page == "About":
+    st.subheader("📘 About The Project")
     st.write("""
-    This ML system predicts the best crop using environmental conditions:
-    - Nitrogen  
-    - Phosphorus  
-    - Potassium  
-    - Temperature  
-    - Humidity  
-    - pH Value  
-    - Rainfall  
+    This system predicts the best crop using environmental parameters.
+    It uses ML algorithms to generate crop recommendation.
     """)
     st.stop()
 
-if page == "Dataset Info":
-    st.markdown("<h1 class='main-title'>📊 Dataset Information</h1>", unsafe_allow_html=True)
+# DATASET
+if selected_page == "Dataset":
+    st.subheader("📊 Dataset Information")
     st.write("""
-    - 22 crop classes  
-    - 7 numerical features  
-    - Clean and balanced  
-    - Used for ML training  
+    - 22 crops  
+    - 7 environmental features  
+    - Clean and balanced dataset  
     """)
     st.stop()
 
-if page == "Model Used":
-    st.markdown("<h1 class='main-title'>🤖 Machine Learning Model</h1>", unsafe_allow_html=True)
+# MODEL USED
+if selected_page == "Model":
+    st.subheader("🤖 Machine Learning Model")
     st.write("""
     - Multiple ML models tested  
-    - Final model selected based on best performance  
-    - Pipeline: StandardScaler + Best Model  
+    - Best-performing one selected  
+    - Pipeline includes StandardScaler  
     """)
     st.stop()
 
 
-# ---------------------- HOME PAGE ----------------------
-st.markdown("<h1 class='main-title'>🌾 Crop Recommendation System</h1>", unsafe_allow_html=True)
-
+# HOME PAGE (MAIN)
 st.markdown("<div class='input-card'>", unsafe_allow_html=True)
 
 N = st.number_input("Nitrogen (N)", 0, 200, 50)
@@ -180,11 +209,11 @@ predict_btn = st.button("Predict Crop 🌱")
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------------------- PREDICTION ----------------------
+# PREDICTION
 if predict_btn:
     sample = np.array([[N, P, K, temperature, humidity, ph, rainfall]])
-    prediction = pipeline.predict(sample)
-    crop = le.inverse_transform(prediction)[0]
+    pred = pipeline.predict(sample)
+    crop = le.inverse_transform(pred)[0]
 
     st.markdown(
         f"<div class='result-box'><h2>🌟 Recommended Crop: {crop.upper()}</h2></div>",
