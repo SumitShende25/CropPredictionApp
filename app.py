@@ -113,16 +113,16 @@ selected_page = st.session_state.get("selected_page", "Home")
 # Build nav bar
 nav_cols = st.columns([1,1,1,1,1])
 with nav_cols[0]:
-    if st.button("🏠 Home"):
+    if st.button("Home"):
         selected_page = "Home"
 with nav_cols[1]:
-    if st.button("📘 About Project"):
+    if st.button("About Project"):
         selected_page = "About"
 with nav_cols[2]:
-    if st.button("📊 Dataset Info"):
+    if st.button("Dataset Info"):
         selected_page = "Dataset"
 with nav_cols[3]:
-    if st.button("🤖 Model Used"):
+    if st.button("Model Used"):
         selected_page = "Model"
 
 st.session_state["selected_page"] = selected_page
@@ -145,7 +145,7 @@ le = joblib.load("label_encoder.pkl")
 
 # ABOUT PROJECT
 if selected_page == "About":
-    st.subheader("📘 About The Project")
+    st.subheader("About The Project")
     st.write("""
     This Crop Recommendation System is an intelligent machine learning-based
 application designed to assist farmers and agriculture professionals in selecting
@@ -181,10 +181,8 @@ easy-to-use, clean, web-based interface accessible to everyone.
 
 # DATASET PAGE
 if selected_page == "Dataset":
-    st.subheader("📊 Dataset Information")
+    st.subheader("Dataset Information")
     st.write("""
-   ### 📊 Dataset Information
-
 The dataset used in this project is an agricultural crop recommendation dataset
 that contains real-world soil and climate measurements along with the
 corresponding suitable crop. It includes **22 different crop types** and **2,200+
@@ -214,10 +212,8 @@ This dataset is widely used in crop prediction research due to:
 
 # MODEL PAGE
 if selected_page == "Model":
-    st.subheader("🤖 Machine Learning Model")
+    st.subheader("Machine Learning Model")
     st.write("""
-   ### 🤖 Machine Learning Model Used
-
 Multiple machine learning models were evaluated to determine the best-performing
 model for crop prediction.  
 The following models were tested:
@@ -278,4 +274,5 @@ if predict_btn:
     })
 
     st.bar_chart(df_compare.set_index("Parameter"))
+
 
